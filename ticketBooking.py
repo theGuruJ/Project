@@ -50,16 +50,18 @@ Controller = The code that controls it.
         - lookup using the already booked ticket.
 
 """
+import json
 import model
-
+import view
 
 # import datetime
 
 
 def booking():
-    tickets = model.MovieTickets()
-    tickets.display_movies()
-    no_of_movies = tickets.no_of_movies()
+    movie_details = model.MovieTickets.get_movie_details()
+    #    print (movie_details)
+    view.view.display_movies(movie_details)
+    no_of_movies = model.MovieTickets.no_of_movies()
     while True:  # So that we can repeatedly ask for input until we get the correct input
         try:
             selection = raw_input('\n'
@@ -75,7 +77,7 @@ def booking():
                      'Please type in your name:')
     phone_number = raw_input('\n'
                              'Please type in your Phone Number:')
-    no_of_seats_available = tickets.no_of_seats_available(movie_serial)
+    no_of_seats_available = model.MovieTickets.no_of_seats_available(movie_serial)
     max_no_bookable = min(no_of_seats_available, 6)
     while True:
         try:
@@ -94,12 +96,12 @@ def booking():
     #                'Please type in the serial number of the movie you want to book!')
 
     #    tickets.book_a_ticket(x,name,phone_number,no_of_seats)
-    name_of_movie = tickets.get_movie_name(movie_serial)
-    ticket_id = tickets.book_a_ticket(movie_serial, name, phone_number, no_of_seats)
-    tickets.print_a_ticket(ticket_id, name_of_movie)
-    booking()
+    name_of_movie = model.MovieTickets.get_movie_name(movie_serial)
+    ticket_id = model.MovieTickets.book_a_ticket(movie_serial, name, phone_number, no_of_seats)
+    print ticket_id
+    #model.MovieTickets.print_a_ticket(ticket_id, name_of_movie)
+    if __name__ == '__main__':
+        booking()
 
 if __name__ == '__main__':
     booking()
-
-
