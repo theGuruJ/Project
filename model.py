@@ -17,7 +17,7 @@ class MovieTickets(object):
               3: ['Nanu Ki Jaanu', 100, 0,[]]}
     tickets = {}
 
-    ticket_id = 11
+    ticket_id = 1
 
     @staticmethod
     def no_of_movies():
@@ -32,18 +32,18 @@ class MovieTickets(object):
     def no_of_seats_available(movie_selection):
         return MovieTickets.movies[movie_selection][1]
 
-
     @staticmethod
     def get_movie_name(movie_selection):
         return MovieTickets.movies[movie_selection][0]
 
     @staticmethod
     def book_a_ticket(movie_selection,name_of_booker,phone_number,number_of_seats_booked):
-        MovieTickets.tickets[MovieTickets.ticket_id] = [movie_selection,name_of_booker,phone_number,number_of_seats_booked]
+        MovieTickets.tickets[MovieTickets.ticket_id] = [MovieTickets.ticket_id,movie_selection,name_of_booker,phone_number,number_of_seats_booked]
+        ticket_details = json.dumps([MovieTickets.ticket_id,MovieTickets.movies[movie_selection][0],name_of_booker,phone_number,number_of_seats_booked])
         MovieTickets.movies[movie_selection][1] -= number_of_seats_booked
         MovieTickets.movies[movie_selection][2] += number_of_seats_booked
         MovieTickets.movies[movie_selection][3].append(MovieTickets.ticket_id)
         MovieTickets.ticket_id += 1
         print("Ticket Booked")
-        return MovieTickets.tickets[MovieTickets.ticket_id - 1]
+        return ticket_details
 

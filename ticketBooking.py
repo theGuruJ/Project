@@ -67,22 +67,31 @@ def booking():
             selection = raw_input('\n'
                                   'Please type in the serial number of the movie you want to book!')
             movie_serial = int(selection)
+            no_of_seats_available = model.MovieTickets.no_of_seats_available(movie_serial)
+            max_no_bookable = min(no_of_seats_available, 6)
             if (movie_serial < 1) or (movie_serial > no_of_movies):  # Checking if the selection corresponds to the no of movies in the list.
                 raise ValueError
             else:
                 break  # to break out of while loop and continue with the program if the input is correct
         except ValueError:
-            print("Not a valid input! Please try again ...")
-    name = raw_input('\n'  # getting name of the person getting the input
-                     'Please type in your name:')
-    phone_number = raw_input('\n'
-                             'Please type in your Phone Number:')
+            print("Not a valid input, Please try again...")
+    while True:  # So that we can repeatedly ask for input until we get the correct input
+        try:
+            if max_no_bookable == 0:
+                raise KeyError
+            else:
+                break  # to break out of while loop and continue with the program if the input is correct
+        except KeyError:
+            print("Movie selection does not have any seats available! Please make a different selection...")
+            booking()
+    name = raw_input('Please type in your name:')
+    phone_number = raw_input('Please type in your Phone Number:')
     no_of_seats_available = model.MovieTickets.no_of_seats_available(movie_serial)
     max_no_bookable = min(no_of_seats_available, 6)
     while True:
         try:
-            no_of_seats = raw_input('\n'
-                                    'How many seats would you like to book?(Max 6 seats allowed)')
+            string = "How many seats would you like to book?(Max "+str(max_no_bookable)+" seats allowed)"
+            no_of_seats = raw_input(string)
             no_of_seats = int(no_of_seats)
             if (no_of_seats < 1) or (no_of_seats > max_no_bookable):
                 raise ValueError
@@ -97,9 +106,9 @@ def booking():
 
     #    tickets.book_a_ticket(x,name,phone_number,no_of_seats)
     name_of_movie = model.MovieTickets.get_movie_name(movie_serial)
-    ticket_id = model.MovieTickets.book_a_ticket(movie_serial, name, phone_number, no_of_seats)
-    print ticket_id
-    #model.MovieTickets.print_a_ticket(ticket_id, name_of_movie)
+    ticket_details = model.MovieTickets.book_a_ticket(movie_serial, name, phone_number, no_of_seats)
+    #print ticket_details
+    view.view.print_a_ticket(ticket_details)
     if __name__ == '__main__':
         booking()
 
