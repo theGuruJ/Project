@@ -1,6 +1,7 @@
 import model
 import json
 
+
 class view(object):
     @staticmethod
     def display_movies(movie_details):
@@ -10,15 +11,14 @@ class view(object):
         print("The available movies are listed below!")
         print '%-8s%-30s%-5s' % ('S. No.', 'Name', 'No. Of Seats Available')
         for e in movie_details:
-            print '%-8s%-30s%-5i' % (e,movie_details[e][0],movie_details[e][1])
+            print '%-8s%-30s%-5i' % (e, movie_details[e][0], movie_details[e][1])
 
     @staticmethod
     def print_a_ticket(ticket_details):
-        #[MovieTickets.ticket_id,movie_selection,name_of_booker,phone_number,number_of_seats_booked]
+        # [MovieTickets.ticket_id,movie_selection,name_of_booker,phone_number,number_of_seats_booked]
         ticket_details = json.loads(ticket_details)
-        print '   Ticket No:',ticket_details[0]
-        print '        Name:',ticket_details[2]
-        print 'Phone Number:',ticket_details[3]
-        print ' Movie Name:',ticket_details[1]
-        print 'Number of Seats:',ticket_details[4]
-
+        print '   Ticket No:', ticket_details[0]
+        print '        Name:', ticket_details[2]
+        print 'Phone Number:', ticket_details[3]
+        print ' Movie Name:', ticket_details[1]
+        print 'Number of Seats:', ticket_details[4]
