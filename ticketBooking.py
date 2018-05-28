@@ -52,7 +52,7 @@ Controller = The code that controls it.
 """
 import json
 from model import MovieTickets
-from view import view
+from view import View
 
 
 # import datetime
@@ -61,7 +61,7 @@ from view import view
 def booking():
     movie_details = MovieTickets.get_movie_details()
     #    print (movie_details)
-    view.display_movies(movie_details)
+    View.display_movies(movie_details)
     no_of_movies = MovieTickets.no_of_movies()
     while True:  # So that we can repeatedly ask for input until we get the correct input
         try:
@@ -73,6 +73,8 @@ def booking():
                 raise ValueError
             else:
                 break  # to break out of while loop and continue with the program if the input is correct
+            no_of_seats_available = MovieTickets.no_of_seats_available(movie_serial)
+            max_no_bookable = min(no_of_seats_available, 6)
         except ValueError:
             print("Not a valid input, Please try again...")
     no_of_seats_available = MovieTickets.no_of_seats_available(movie_serial)
@@ -110,7 +112,7 @@ def booking():
     name_of_movie = MovieTickets.get_movie_name(movie_serial)
     ticket_details = MovieTickets.book_a_ticket(movie_serial, name, phone_number, no_of_seats)
     # print ticket_details
-    view.print_a_ticket(ticket_details)
+    View.print_a_ticket(ticket_details)
     if __name__ == '__main__':
         booking()
 

@@ -2,9 +2,14 @@ import model
 import json
 
 
-class view(object):
+class View(object):
     @staticmethod
     def display_movies(movie_details):
+        """
+        To print to screen the details of movies
+        :param movie_details:
+        :return n/a:
+        """
         movie_details = json.loads(movie_details)
         movie_details = {int(k): v for k, v in movie_details.items()}
         print '\n'
@@ -15,7 +20,15 @@ class view(object):
 
     @staticmethod
     def print_a_ticket(ticket_details):
-        # [MovieTickets.ticket_id,movie_selection,name_of_booker,phone_number,number_of_seats_booked]
+        """
+        # ticket_details contains the following
+        [MovieTickets.ticket_id,movie_selection,name_of_booker,phone_number,number_of_seats_booked]
+        prints details of booked ticket to the screen
+
+        :param ticket_details:
+        :return n/a:
+        """
+
         ticket_details = json.loads(ticket_details)
         print '   Ticket No:', ticket_details[0]
         print '        Name:', ticket_details[2]

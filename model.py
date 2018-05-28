@@ -21,23 +21,53 @@ class MovieTickets(object):
 
     @staticmethod
     def no_of_movies():
+        """
+        :return number of movies available in the booking list:
+        """
         return len(MovieTickets.movies)
+
 
     @staticmethod
     def get_movie_details():
+        """
+        :return returns a json of the details of the movies:
+        """
+
         return json.dumps(MovieTickets.movies)
 
 
     @staticmethod
     def no_of_seats_available(movie_selection):
+        """
+        input: the movie selection
+
+        :param movie_selection:
+        :return returns the number of seats still available to book for a specific movie:
+        """
         return MovieTickets.movies[movie_selection][1]
+
 
     @staticmethod
     def get_movie_name(movie_selection):
+        """
+        input: takes the selection of the user for booking seats for a movie.
+        :param movie_selection:
+        :return the name of the movie:
+        """
         return MovieTickets.movies[movie_selection][0]
+
 
     @staticmethod
     def book_a_ticket(movie_selection,name_of_booker,phone_number,number_of_seats_booked):
+        """
+        enables to book a ticket
+
+        :param movie_selection:
+        :param name_of_booker:
+        :param phone_number:
+        :param number_of_seats_booked:
+        :return ticket details in a json format, to be used to print to screen to confirm to user:
+        """
         MovieTickets.tickets[MovieTickets.ticket_id] = [MovieTickets.ticket_id,movie_selection,name_of_booker,phone_number,number_of_seats_booked]
         ticket_details = json.dumps([MovieTickets.ticket_id,MovieTickets.movies[movie_selection][0],name_of_booker,phone_number,number_of_seats_booked])
         MovieTickets.movies[movie_selection][1] -= number_of_seats_booked
