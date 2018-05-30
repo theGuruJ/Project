@@ -32,9 +32,11 @@ class MovieTickets(object):
         """
         :return returns a json of the details of the movies:
         """
-
-        return json.dumps(MovieTickets.movies)
-
+        movie_list = {}
+        for i in MovieTickets.movies:
+            if MovieTickets.movies[i][1] != 0:
+                movie_list[i]=MovieTickets.movies[i]
+        return json.dumps(movie_list)
 
     @staticmethod
     def no_of_seats_available(movie_selection):
