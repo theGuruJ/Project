@@ -24,7 +24,12 @@ class MovieTickets(object):
         """
         :return number of movies available in the booking list:
         """
-        return len(MovieTickets.movies)
+        list_of_movies = []
+        for i in MovieTickets.movies:
+            if MovieTickets.movies[i][1] != 0:
+                list_of_movies.append(i)
+
+        return list_of_movies
 
 
     @staticmethod

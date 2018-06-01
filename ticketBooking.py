@@ -4,7 +4,7 @@ Movie Ticket booking project - To do
 fix the bugs in the input -
 database structure change - use dictionary / key value pairs.
 segregating the project into separate modules.
-	MVC Structure.
+MVC Structure.
 
 show purchase summary
 
@@ -55,22 +55,31 @@ from model import MovieTickets
 from view import View
 from mock import patch
 
-
-# import datetime
-
 while True:
 
-    #Calling function to display movies on console
+    # Getting movie details
     movie_details = MovieTickets.get_movie_details()
 
+    # sending movie details to display methos
     View.display_movies(movie_details)
-    no_of_movies = MovieTickets.no_of_movies()
-    movie_serial = View.get_movie_selection(no_of_movies)
-    no_of_seats_available = MovieTickets.no_of_seats_available(movie_serial)
-    max_no_bookable = min(no_of_seats_available, 6)
-    ticket = View.get_ticket_details(max_no_bookable)
-    name_of_movie = MovieTickets.get_movie_name(movie_serial)
-    ticket_details = MovieTickets.book_a_ticket(movie_serial, ticket[0], ticket[1], ticket[2])
-    # print ticket_details
 
-    View.print_a_ticket(ticket_details)
+    # getting details of available movies, only serial numbers
+    no_of_movies = MovieTickets.no_of_movies()
+
+    # passing serial numbers to method to get movie selection from user
+    movie_serial = View.get_movie_selection(no_of_movies)
+
+    # getting number of seats available for selected movie
+    no_of_seats_available = MovieTickets.no_of_seats_available(movie_serial)
+
+    # defining max no of seats bookable, least between remaining seats or 6 seats.
+    max_no_bookable = min(no_of_seats_available, 6)
+
+    # getting user details from booker. method returns a json with
+    user_details = View.get_ticket_details(max_no_bookable)
+
+    # booking a ticket. the method returns a json with the ticket details
+    booked_ticket_details = MovieTickets.book_a_ticket(movie_serial, user_details[0], user_details[1], user_details[2])
+
+    # print ticket_details
+    View.print_a_ticket(booked_ticket_details)

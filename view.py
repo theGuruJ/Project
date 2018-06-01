@@ -25,8 +25,7 @@ class View(object):
                 selection = raw_input('\n'
                                       'Please type in the serial number of the movie you want to book!')
                 movie_serial = int(selection)
-                if (movie_serial < 1) or (
-                        movie_serial > no_of_movies):  # Checking if the selection corresponds to the no of movies in the list.
+                if movie_serial not in no_of_movies:  # Checking if the selection corresponds to the no of movies in the list.
                     raise ValueError
                 else:
                     break  # to break out of while loop and continue with the program if the input is correct
