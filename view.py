@@ -3,6 +3,7 @@ import json
 
 
 class View(object):
+
     @staticmethod
     def display_movies(movie_details):
         """
@@ -20,20 +21,26 @@ class View(object):
 
     @staticmethod
     def get_movie_selection(no_of_movies):
+        no_of_movies = json.loads(no_of_movies)
+        no_of_movies = {int(m): s for m, s in no_of_movies.items()}
         while True:  # So that we can repeatedly ask for input until we get the correct input
             try:
                 selection = raw_input('\n'
                                       'Please type in the serial number of the movie you want to book!')
                 movie_serial = int(selection)
-                if movie_serial not in no_of_movies:  # Checking if the selection corresponds to the no of movies in the list.
-                    raise ValueError
+                if movie_serial in no_of_movies:  # Checking if the selection corresponds to the no of movies in the list.
+                    if no_of_movies[movie_serial] == 0:
+                        print "No seats available, select another movie!"
+                        continue
+                    else:
+                        return movie_serial
                 else:
-                    break  # to break out of while loop and continue with the program if the input is correct
-                # no_of_seats_available = MovieTickets.no_of_seats_available(movie_serial)
-                # max_no_bookable = min(no_of_seats_available, 6)
+                    print "Please make a valid selection!"
+                    continue  # to repeat loop if the selection is not in list of movies.
+                    # no_of_seats_available = MovieTickets.no_of_seats_available(movie_serial)
+                    # max_no_bookable = min(no_of_seats_available, 6)
             except ValueError:
-                print("Not a valid input, Please try again...")
-        return movie_serial
+                print "Not a valid input, Please try again..."
 
     @staticmethod
     def get_ticket_details(max_no_bookable):

@@ -13,8 +13,12 @@ class MovieTickets(object):
     '''
 
     movies = {1: ['Avengers: Infinity Wars', 10, 0,[]],
-              2: ['Beyond The Clouds', 75, 0,[]],
-              3: ['Nanu Ki Jaanu', 100, 0,[]]}
+              2: ['Deadpool 2', 75, 0,[]],
+              3: ['Jurassic World', 100, 0,[]],
+              4: ['Kaala', 100, 0, []],
+              5: ['Veere Di Wedding', 100, 0, []],
+              }
+
     tickets = {}
 
     ticket_id = 1
@@ -24,12 +28,10 @@ class MovieTickets(object):
         """
         :return number of movies available in the booking list:
         """
-        list_of_movies = []
+        list_of_movies = {}
         for i in MovieTickets.movies:
-            if MovieTickets.movies[i][1] != 0:
-                list_of_movies.append(i)
-
-        return list_of_movies
+                list_of_movies[i] = MovieTickets.movies[i][1]
+        return json.dumps(list_of_movies)
 
 
     @staticmethod
@@ -37,11 +39,7 @@ class MovieTickets(object):
         """
         :return returns a json of the details of the movies:
         """
-        movie_list = {}
-        for i in MovieTickets.movies:
-            if MovieTickets.movies[i][1] != 0:
-                movie_list[i]=MovieTickets.movies[i]
-        return json.dumps(movie_list)
+        return json.dumps(MovieTickets.movies)
 
     @staticmethod
     def no_of_seats_available(movie_selection):
