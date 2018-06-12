@@ -14,7 +14,7 @@ class MovieTickets(object):
 
     movies = {1: ['Avengers: Infinity Wars', 10, 0,[]],
               2: ['Deadpool 2', 75, 0,[]],
-              3: ['Jurassic World', 100, 0,[]],
+              3: ['Jurassic World', 0, 0,[]],
               4: ['Kaala', 100, 0, []],
               5: ['Veere Di Wedding', 100, 0, []],
               }

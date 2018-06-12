@@ -48,8 +48,8 @@ class View(object):
         phone_number = raw_input('Please type in your Phone Number:')
         while True:
             try:
-                string = "How many seats would you like to book?(Max " + str(max_no_bookable) + " seats allowed)"
-                no_of_seats = raw_input(string)
+                no_seats_in = "How many seats would you like to book?(Max " + str(max_no_bookable) + " seats allowed)"
+                no_of_seats = raw_input(no_seats_in)
                 no_of_seats = int(no_of_seats)
                 if (no_of_seats < 1) or (no_of_seats > max_no_bookable):
                     raise ValueError
