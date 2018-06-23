@@ -1,0 +1,17 @@
+body {
+  font-family: Verdana, Helvetica, sans-serif;
+  background-color: #DDDDDD;
+}
+
+.inln {
+
+	display: inline-block;
+
+}
+
+
+.loginelement {
+
+	clear: both;
+	float: right;
+}

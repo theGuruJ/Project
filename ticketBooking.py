@@ -83,3 +83,6 @@ while True:
 
     # print ticket_details
     View.print_a_ticket(booked_ticket_details)
+
+if __name__ == '__main__':
+    main()
