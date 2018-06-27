@@ -1,46 +1,19 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
-    </head>
-  <body>
+  </head>
 
-<!-- <div id="loginelement">
-        <a href="{{ url }}">{{ url_linktext }}</a>
-</div> -->
-<br>
-<br>
+<body>
 
-<div>
-<!--     {% for greeting in greetings %}
-      {% if greeting.author %}
-        <b>{{ greeting.author.nickname }}</b> wrote:
-      {% else %}
-        An anonymous person wrote:
-      {% endif %}
-      <blockquote>{{ greeting.content|escape }}</blockquote>
-    {% endfor %}
- -->
-<form action="/sign" method="post" id="passmovieselect">
-<select name="movieselect" form="passmovieselect" id="movieselect">
-    {% for key,value in movies.items %}
-       <option value="{{ key }}">{{ value.name }}</option>
-    {% endfor %}
-</select>
-<input type="submit" name="submit">
-</form>
+<div id="header">
 
-<!-- <b>jagjot the great</b> wrote:
-      <blockquote>this is good</blockquote> -->
+<button id="get_movie_details">Display Movies</button>
 
 
-<!--     <form action="/sign" method="post">
-      <div><textarea name="content" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="Sign Guestbook"></div>
-    </form>
- -->
+
 </div>
 
-<!-- <script src="js/main.js" type="text/javascript"></script> -->
+<script src="js/main.js" type="text/javascript"></script>
 
   </body>
 </html>

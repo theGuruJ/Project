@@ -12,12 +12,21 @@ class MovieTickets(object):
 
     '''
 
-    movies = {1: {"name": 'Avengers: Infinity Wars', "avail_seats": 10, "booked_seats": 0,},
-              2: {"name": 'Deadpool 2', "avail_seats": 75, "booked_seats": 0,},
-              3: {"name": 'Jurassic World', "avail_seats": 0, "booked_seats": 0,},
-              4: {"name": 'Kaala', "avail_seats": 100, "booked_seats": 0,},
-              5: {"name": 'Veere Di Wedding', "avail_seats": 100, "booked_seats": 0,},
-              }
+    movies = {
+        "Avengers Infinity Wars": {"avail_seats": 10, "booked_seats": 0},
+        "Deadpool 2": {"avail_seats": 75, "booked_seats": 0},
+        "Jurassic World":{"avail_seats": 0, "booked_seats": 0},
+        "Kaala":{"avail_seats": 100, "booked_seats": 0},
+        "Veere Di Wedding":{"avail_seats": 100, "booked_seats": 0}
+    }
+
+    # movies = {"1": {"name": 'Avengers: Infinity Wars', "avail_seats": 10, "booked_seats": 0,},
+    #           "2": {"name": 'Deadpool 2', "avail_seats": 75, "booked_seats": 0,},
+    #           "3": {"name": 'Jurassic World', "avail_seats": 0, "booked_seats": 0,},
+    #           "4": {"name": 'Kaala', "avail_seats": 100, "booked_seats": 0,},
+    #           "5": {"name": 'Veere Di Wedding', "avail_seats": 100, "booked_seats": 0,},
+    #           }
+
 
 
 
@@ -41,7 +50,8 @@ class MovieTickets(object):
         """
         :return returns a json of the details of the movies:
         """
-        return MovieTickets.movies
+        print json.dumps(MovieTickets.movies)
+        return json.dumps(MovieTickets.movies)
 
     @staticmethod
     def no_of_seats_available(movie_selection):

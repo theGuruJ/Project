@@ -27,17 +27,19 @@ from google.appengine.ext.webapp import template
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        details = MovieTickets.movies
-        print details
+        details = {
+            "key" : "value"
+        }
 
         path = os.path.join(os.path.dirname(__file__), 'index.html')
-        self.response.out.headers['content-type'] = 'text/json'
-        self.response.out.write(template.render(path, details))
+        self.response.write(template.render(path, details))
 
-        # guestbook_name=self.request.get('guestbook_name')
-        # greetings_query = Greeting.all().ancestor(
-        #     guestbook_key(guestbook_name)).order('-date')
-        # greetings = greetings_query.fetch(10)
+class GetMovieDetails(webapp2.RequestHandler):
+    def get(self):
+        details = MovieTickets.get_movie_details()
+        print details
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.write(details)
 
 # Start of current version of app
 
@@ -134,7 +136,7 @@ class MainPage(webapp2.RequestHandler):
 
 application = webapp2.WSGIApplication([
     ('/',MainPage),
-    # ('/',Guestbook),
+    ('/display_movie', GetMovieDetails),
     # ('/bookticket', BookTicket),
 ], debug=True)
 
