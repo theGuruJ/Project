@@ -1,3 +1,13 @@
 .idea/*
 .idea/**
 .idea/**/*
+hellowebapp2/*
+hellowebapp2/**
+hellowebapp2/**/*
+venv/*
+venv/**
+venv/**/*
+lib/*
+lib/**
+lib/**/*
+*.pyc

@@ -13,6 +13,21 @@
 
 </div>
 
+<div class="container">
+
+    <p>{{ movie_name }}</p>
+
+<form id="contact" action="/bookticket" method="post">
+  <h3>Please enter your information to book a ticket for {{ movie_info.mov_name }}!</h3>
+    <input placeholder="Your name" type="text" name="bname" autocomplete='name' required autofocus>
+    <input placeholder="Your Email Address" type="email" name="email" autocomplete='email' required>
+    <input placeholder="Your Phone Number" type="tel" name="phonenumber" autocomplete='tel' required>
+    <input placeholder="No of tickets" type="number" name="no_of_seats"  min="1"  name="phonenumber" required>
+    <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
+
+</form>
+</div>
+
 <script src="js/main.js" type="text/javascript"></script>
 
   </body>
