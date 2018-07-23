@@ -5,30 +5,99 @@
 
 <body>
 
+  <button id="button_register">Register</button>
+  <button id="button_signin">Sign-in</button>
+
 <div id="header">
 
-<button id="get_movie_details">Display Movies</button>
+
+
+
+    <button class="submit-button" id="get_movie_details">Display Movies</button>
+
+
+
+
+<form name="movie_selection" id="movie_list">
+    <select name="movie_selection1" id="movie_selection1_select">
+
+    </select>
+    <input class="submit-button" type="submit" id="submit_movie_selection" value="book ticket"/>
+  </form>
+
+</div>
+
+<div class="modal" id="myModal">
+  <div class="modal_content_ticket container" id="ticket_booking">
+
+    <span class="close">&times;</span>
+
+  <form id="form_select_no_of_seats">
+    <h3>How many seats would you like to book?</h3>
+      <input type="number" name="seats" min="1" max="6" step="1" id="no_of_seat_selection" required autofocus>
+    <h3>Please enter your contact information to complete booking your ticket!</h3>
+      <input type="hidden" name="form_contact_movie_selection" value="0">
+      <input placeholder="Your name" type="text" name="bname" autocomplete='name' required>
+      <input placeholder="Your Phone Number" type="tel" name="phonenumber" autocomplete='tel' required>
+      <input placeholder="Your email address" type="email" name="email" autocomplete='email' required>
+      <input class="submit-button" name="submit" type="submit" id="contact-submit">
+  </form>
+
+</div>
+
+
+<div class="modal_content_signin" id="signin_form">
+
+  <span class="close" id="close_signin">&times;</span>
+
+  <h3>Sign-in </h3>
+
+  <form id="form_signin">
+    <input type="text" name="user_name" id="user_name" placeholder="User Name" required>
+    <input type="password" name="password" id="customer_password_signin" placeholder="Password" required>
+  </form>
+
+  <button class="button" id="launch_register_from_signin">Register</button>
+
+</div>
+
+<div class="modal_content_register" id="register_form">
+
+  <span class="close" id="close_register">&times;</span>
+
+  <h3>enter your info to register</h3>
+
+  <form id="form_register">
+
+    <input type="text" name="name_customer_name" id="customer_name" placeholder="Name" required>
+    <input type="email" name="name_customer_email" id="customer_email" placeholder="Email Address" required>
+    <input type="number" name="name_cx_phone_number" id="customer_phonenumber" placeholder="Phone Number" required>
+    <input type="password" name="name_cx_password" id="customer_password_register" placeholder="Password" required>
+    <input type="submit" value="submit">
+
+  </form>
+
+</div>
+
+<div class="modal-notification" id="display_notif">
+
+<p></p>
+
+    <button class="close">Close</button>
+
+</div>
 
 
 
 </div>
 
-<div class="container">
 
-    <p>{{ movie_name }}</p>
+<!-- <input class="submit-button" name="submit" type="submit"> -->
 
-<form id="contact" action="/bookticket" method="post">
-  <h3>Please enter your information to book a ticket for {{ movie_info.mov_name }}!</h3>
-    <input placeholder="Your name" type="text" name="bname" autocomplete='name' required autofocus>
-    <input placeholder="Your Email Address" type="email" name="email" autocomplete='email' required>
-    <input placeholder="Your Phone Number" type="tel" name="phonenumber" autocomplete='tel' required>
-    <input placeholder="No of tickets" type="number" name="no_of_seats"  min="1"  name="phonenumber" required>
-    <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
-
-</form>
-</div>
 
 <script src="js/main.js" type="text/javascript"></script>
+
+<!-- <a href="/add_movie">go here to add a new movie</a> -->
 
   </body>
 </html>
