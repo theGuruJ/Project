@@ -24,6 +24,7 @@
 
 import json
 from google.appengine.ext import ndb
+import datetime
 
 
 class Session(ndb.Model):
@@ -31,9 +32,15 @@ class Session(ndb.Model):
     email = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
 
-    @classmethod
-    def set_session(cls, user_data):
-        return cls(name=user_data.get('name'), email=user_data.get('email')).put()
+    @staticmethod
+    def set_session(user_data):
+        existing_sessions = Session.query(Session.email == user_data.get('email_address')).get()
+        if existing_sessions is not None:
+            existing_sessions.date = datetime.datetime.now()
+            existing_sessions.put()
+            return existing_sessions.key
+        else:
+            return Session(name=user_data.get('customer_name'), email=user_data.get('email_address')).put()
 
 
 class MovieDetails(ndb.Model):
@@ -41,7 +48,7 @@ class MovieDetails(ndb.Model):
     capacity = ndb.IntegerProperty()
     available_seats = ndb.IntegerProperty()
     booked_seats = ndb.IntegerProperty()
-    status = ndb.StringProperty()
+    movie_status = ndb.StringProperty()
 
     @staticmethod
     def get_movie_name(movie_name):
@@ -50,6 +57,18 @@ class MovieDetails(ndb.Model):
     def get_movie_details(self):
         #to be implemented
         pass
+
+    @staticmethod
+    def add_movie(details):
+        movie = MovieDetails(
+            movie_name = details.get('movie_name'),
+            capacity = details.get('capacity'),
+            available_seats = details.get('available_seats'),
+            booked_seats = details.get('booked_seats'),
+            movie_status = details.get('movie_status'),
+            )
+        return movie.put()
+
 
 class Customers(ndb.Model):
     username = ndb.StringProperty()
@@ -70,9 +89,26 @@ class Customers(ndb.Model):
 
         return customer.put()
 
+    @staticmethod
+    def is_customer(email_address, password):
+        customer = ndb.Key("Customers", email_address).get()
+        print password
+        print customer
+        if password == customer.password:
+            return customer
+        else:
+            return False
+
+
+class MovieScreenings(ndb.Model):
+    movie_identifier = ndb.KeyProperty(kind=MovieDetails)
+    screening_date = ndb.DateProperty()
+    screening_time = ndb.TimeProperty()
+
 
 class Tickets(ndb.Model):
     movie_selection = ndb.KeyProperty(kind=MovieDetails)
+    screening = ndb.KeyProperty(kind=MovieScreenings)
     customer_id = ndb.KeyProperty(kind=Customers)
     no_of_seats_booked = ndb.IntegerProperty()
 

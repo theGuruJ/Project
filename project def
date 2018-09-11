@@ -1,0 +1,59 @@
+
+
+Functionality
+
+Create a movie record
+Update a movie record
+
+Create screening options
+update screening options
+
+create a customer record
+update a customer record
+
+book a ticket
+Update a ticket?
+
+
+DB - Models
+
+
+class Session(ndb.Model):
+    name = ndb.StringProperty()
+    email = ndb.StringProperty()
+    date = ndb.DateTimeProperty(auto_now_add=True)
+
+
+class MovieDetails(ndb.Model):
+    movie_name = ndb.StringProperty()
+    capacity = ndb.IntegerProperty()
+    available_seats = ndb.IntegerProperty()
+    booked_seats = ndb.IntegerProperty()
+    movie_status = ndb.StringProperty()
+
+
+class MovieScreenings(nbd.Model):
+    movie_identifier = ndb.KeyProperty(kind=MovieDetails)
+    screening_date = ndb.DateProperty()
+    screening_time = ndb.TimeProperty()
+    cost_of_seat = ndb.IntegerProperty()
+
+
+class Customers(ndb.Model):
+    username = ndb.StringProperty()
+    password = ndb.StringProperty()
+    customer_name = ndb.StringProperty()
+    email_address = ndb.StringProperty()
+    phone_number = ndb.IntegerProperty()
+    customer_active = ndb.BooleanProperty()
+
+
+class Tickets(ndb.Model):
+    movie_selection = ndb.KeyProperty(kind=MovieDetails)
+    screening = ndb.KeyProperty(kind=MovieScreenings)
+    customer_id = ndb.KeyProperty(kind=Customers)
+    no_of_seats_booked = ndb.IntegerProperty()
+
+
+
+

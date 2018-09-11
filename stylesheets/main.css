@@ -24,7 +24,7 @@ body {
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 1;     /* Sit on top */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -37,7 +37,8 @@ body {
 /* Modal Content/Box */
 .modal_content_signin,
 .modal_content_register,
-.modal_content_ticket {
+.modal_content_ticket,
+.modal_notification {
   display: none; /* Hidden by default */
   background-color: #5e9bd2;
   margin: auto; /*  15% from the top and centered */
@@ -71,7 +72,7 @@ input {
 
   height: 50px;
   width: 250px;
-  display: block;
+  display: inline-block;
   border-radius: 5px;
   font-size: 20px;
   margin: 2px 5px;

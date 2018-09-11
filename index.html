@@ -18,14 +18,18 @@
 
 
 
-<form name="movie_selection" id="movie_list">
+  <form name="movie_selection" id="movie_list">
     <select name="movie_selection1" id="movie_selection1_select">
 
     </select>
-    <input class="submit-button" type="submit" id="submit_movie_selection" value="book ticket"/>
+
   </form>
 
+  <button class="submit-button" id="submit_movie_selection" value="book ticket"/>Book Ticket</button>
+
 </div>
+
+
 
 <div class="modal" id="myModal">
   <div class="modal_content_ticket container" id="ticket_booking">
@@ -34,7 +38,8 @@
 
   <form id="form_select_no_of_seats">
     <h3>How many seats would you like to book?</h3>
-      <input type="number" name="seats" min="1" max="6" step="1" id="no_of_seat_selection" required autofocus>
+      <input type="range" name="seats" min="1" max="6" step="1" id="no_of_seat_selection" required autofocus>
+        <span id="no_of_seats_display"></span>
     <h3>Please enter your contact information to complete booking your ticket!</h3>
       <input type="hidden" name="form_contact_movie_selection" value="0">
       <input placeholder="Your name" type="text" name="bname" autocomplete='name' required>
@@ -57,7 +62,7 @@
     <input type="password" name="password" id="customer_password_signin" placeholder="Password" required>
   </form>
 
-  <button class="button" id="launch_register_from_signin">Register</button>
+  <button class="submit-button" id="submit_signin">Sign-In</button>
 
 </div>
 
@@ -73,17 +78,18 @@
     <input type="email" name="name_customer_email" id="customer_email" placeholder="Email Address" required>
     <input type="number" name="name_cx_phone_number" id="customer_phonenumber" placeholder="Phone Number" required>
     <input type="password" name="name_cx_password" id="customer_password_register" placeholder="Password" required>
-    <input type="submit" value="submit">
-
   </form>
+
+  <button class="submit-button" id="submit_register">Register</button>
+
 
 </div>
 
-<div class="modal-notification" id="display_notif">
+<div class="modal_notification" id="display_notif">
 
-<p></p>
+<p id="notif"></p>
 
-    <button class="close">Close</button>
+    <button class="close" id="close_notif">Close</button>
 
 </div>
 

@@ -47,35 +47,20 @@ class GetMovieDetails(webapp2.RequestHandler):
 class NoOfSeatsAvail(webapp2.RequestHandler):
     def post(self):
         input_data = json.loads(self.request.body)
-        # print input_data
         selected_movie_id = int(input_data.get('movie_name'))
         print MovieDetails.get_movie_name(selected_movie_id)
 
-        # selected_movie_id_s = str(input_data.get('movie_name'))
-        # print selected_movie_id
         movie_key = ndb.Key("MovieDetails", selected_movie_id)
-        # print movie_key
-        # print type(movie_key)
         no_of_seats_avail = movie_key.get()
-        # print no_of_seats_avail.available_seats
-        # no_of_tickets = MovieTickets.no_of_seats_available(movie_selection)
         self.response.headers['Content-Type'] = 'application/json'
-        data_to_send = {"no_of_seats": no_of_seats_avail.available_seats}
-        # print data_to_send
-        self.response.write(json.dumps(data_to_send))
+        output_data = {"no_of_seats": no_of_seats_avail.available_seats}
+        self.response.write(json.dumps(output_data))
 
 
 class BookTicket(webapp2.RequestHandler):
     def post(self):
         input_data = json.loads(self.request.body)
         print input_data
-        # {u'movie_name': u'4785074604081152', u'email': u'email@email.com', u'name': u'afdsg', u'noOfSeats': u'5',
-        #  u'phoneNumber': u'3456'}
-        #
-        # class Customers(ndb.Model):
-        #     customer_name = ndb.StringProperty()
-        #     email_address = ndb.StringProperty()
-        #     phone_number = ndb.IntegerProperty()
 
         email_address = str(input_data.get('email'))
         if not ndb.Key("Customers", email_address).get():
@@ -120,19 +105,20 @@ class AddMovie(webapp2.RequestHandler):
 
     def post(self):
         movie_name = self.request.POST['movie_name']
-        print movie_name
         capacity = int(self.request.POST['capacity'])
-        print capacity
         available_seats = int(self.request.POST['available_seats'])
-        print available_seats
         booked_seats = int(self.request.POST['booked_seats'])
-        print booked_seats
-        movie = MovieDetails()
-        movie.movie_name = movie_name
-        movie.capacity = capacity
-        movie.available_seats = available_seats
-        movie.booked_seats = booked_seats
-        key_from_put = movie.put()
+        movie_status = str(self.request.POST['movie_status'])
+
+        mov_data = {
+        'movie_name' : movie_name,
+        'capacity' : capacity,
+        'available_seats' : available_seats,
+        'booked_seats' : booked_seats,
+        'movie_status' : movie_status,
+        }
+        print mov_data
+        key_from_put = MovieDetails.add_movie(mov_data)
         print type(key_from_put)
         key_from_put = str(key_from_put)
         print key_from_put
@@ -142,7 +128,7 @@ class AddMovie(webapp2.RequestHandler):
 
 class Register(webapp2.RequestHandler):
     def get(self):
-        path = os.path.join(os.path.dirname(__file__), 'signup.html')
+        path = os.path.join(os.path.dirname(__file__), 'register.html')
         self.response.write(template.render(path, {}))
 
     def post(self):
@@ -155,22 +141,42 @@ class Register(webapp2.RequestHandler):
         customer_name = input_data['customer_name']
         phone_number = int(input_data['phone_number'])
         customer_key = Customers.create_customer(email_address, password, customer_name, phone_number)
-        session_id = str((Session.set_session({'name': customer_name, 'email': email_address})).id())
+        session_id = str((Session.set_session({'customer_name': customer_name, 'email_address': email_address})).id())
         print session_id
         if customer_key:
-            self.response.set_cookie('session_id', session_id)
+            self.response.set_cookie('session_id', session_id, max_age=1800)
             self.response.write(json.dumps({'status': 'succeeded'}))
         else:
             self.response.write(json.dumps({'status': 'failed'}))
 
 
-class SignIn(webapp2.RequestHandler):
+class Login(webapp2.RequestHandler):
     def get(self):
-        path = os.path.join(os.path.dirname(__file__), 'signup.html')
+        path = os.path.join(os.path.dirname(__file__), 'login.html')
         self.response.write(template.render(path, {}))
     
     def post(self):
-        pass
+        input_data = json.loads(self.request.body)
+        print "Main.py - line 174"
+        print input_data
+        customer = Customers.is_customer(**input_data)
+        print "Main.py - line 177"
+        print customer
+        if customer:
+            customer_info = {
+                'customer_name': customer.customer_name,
+                'email_address':  customer.email_address
+            }
+            session_key = Session.set_session(customer_info)
+            print "Main.py - line 181"
+            print session_key
+            session_id = str(session_key.id())
+            print "Main.py - line 184"
+            print session_id
+            self.response.set_cookie('session_id', session_id, max_age=1800)
+            self.response.write(json.dumps({'status': 'login successful'}))
+        else:
+            self.response.write(json.dumps({'status': 'login failed'}))
 
 
 class EditMovie(webapp2.RequestHandler):
@@ -202,15 +208,15 @@ application = webapp2.WSGIApplication([
     ('/display_movie', GetMovieDetails),
     ('/no_of_seats_avail', NoOfSeatsAvail),
     ('/book_ticket', BookTicket),
-    ('/add_movie', AddMovie),
     ('/register', Register),
-    ('/signin', SignIn),
+    ('/login', Login),
+    ('/add_movie', AddMovie),
     ('/edit_movie', EditMovie),
 
 ], debug=True, )
 
-def main():
-    application.run()
-
-if __name__ == "__main__":
-    main()
+# def main():
+#     application.run()
+#
+# if __name__ == "__main__":
+#     main()
