@@ -139,6 +139,21 @@ input {
 
 }
 
+#button_signout {
+
+  height: 25px;
+  width: 100px;
+  border-radius: 5px;
+  font-size: 17px;
+  float: right;
+  /* margin-right: 0px; */
+  clear: right;
+  display: block;
+
+
+
+}
+
 .submit-button {
   height: 40px;
   width: 200px;

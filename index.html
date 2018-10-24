@@ -7,8 +7,9 @@
 
   <button id="button_register">Register</button>
   <button id="button_signin">Sign-in</button>
+  <button id="button_signout">Sign-out</button>
 
-<div id="header">
+  <div id="header">
 
 
 
@@ -25,7 +26,17 @@
 
   </form>
 
-  <button class="submit-button" id="submit_movie_selection" value="book ticket"/>Book Ticket</button>
+  <button class="submit-button" id="submit_movie_selection" value="book ticket">Get Movie Listings</button>
+
+  <form name="show_selection" id="show_list">
+    <select name="show_selection1" id="show_selection1_select">
+
+    </select>
+
+  </form>
+
+  <button class="submit-button" id="submit_show_selection" value="book ticket">Book Ticket</button>
+
 
 </div>
 
@@ -98,12 +109,9 @@
 </div>
 
 
-<!-- <input class="submit-button" name="submit" type="submit"> -->
-
 
 <script src="js/main.js" type="text/javascript"></script>
 
-<!-- <a href="/add_movie">go here to add a new movie</a> -->
 
   </body>
 </html>

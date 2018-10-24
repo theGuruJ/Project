@@ -3,24 +3,18 @@ window.onload = myApp();
 
 function myApp() {
 
-var notif_next_modal = undefined;
+var active_modal;
 
-var active_modal = undefined;
+var notif_next_modal;
 
-var login_status = undefined;
-
-var bookingstatus = new Object();
-
-console.log(bookingstatus);
+var login_status;
 
 var button_retrieve_movies = document.getElementById('get_movie_details');
-
 var modal = document.getElementsByClassName('modal')[0];
 var modal_1 = document.getElementsByClassName('modal_content_ticket')[0];
 var modal_2 = document.getElementsByClassName('modal_content_signin')[0];
 var modal_3 = document.getElementsByClassName('modal_content_register')[0];
 var modal_notif = document.getElementsByClassName('modal_notification')[0];
-
 var button_register_modal = document.getElementById('button_register')
 var button_signin_modal = document.getElementById('button_signin')
 var submit_form_register = document.forms['form_register'];
@@ -28,7 +22,7 @@ var form_signin = document.forms['form_signin'];
 var submit_button_signin = document.getElementById("submit_signin")
 var submit_button_register = document.getElementById("submit_register")
 // Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+var span = document.getElementsByClassName("close")[0]; // revert this to [0] if experiment does not work.
 var close_span_signin = document.getElementById("close_signin");
 var close_span_register = document.getElementById("close_register");
 var close_span_notif = document.getElementById("close_notif");
@@ -39,6 +33,7 @@ var button_submit_movie_selection = document.getElementById("submit_movie_select
 document.getElementById("no_of_seats_display").innerText = document.getElementById("no_of_seat_selection").value;
 
 
+submit_form_register.addEventListener('submit', func_submit_form_register);
 button_register_modal.addEventListener('click', launch_register_modal)
 button_signin_modal.addEventListener('click', launch_signin_modal);
 button_retrieve_movies.addEventListener('click',get_movie_details_request);
@@ -48,50 +43,17 @@ get_movie_details_request();
 // When the user clicks anywhere outside of the modal, close it
 
 button_select_no_of_seats.addEventListener('submit',get_ticket_details);
+button_submit_movie_selection.addEventListener('click',check_login);
 
-button_submit_movie_selection.addEventListener('click',query_screenings);
-
-modal.onclick = function() {
+modal.onclick = function(event) {
     if (event.target == modal){
         if (active_modal != modal_notif){
             active_modal.style.display = "none";
             modal.style.display = "none";
             active_modal = undefined;
-            };
         };
     };
-
-span.onclick = function() {
-    active_modal.style.display = "none";
-    modal.style.display = "none";
-    active_modal = undefined
-}
-
-close_span_signin.onclick = function() {
-    active_modal.style.display = "none";
-    modal.style.display = "none";
-    active_modal = undefined
-}
-    
-close_span_register.onclick = function() {
-    active_modal.style.display = "none";
-    modal.style.display = "none";
-    active_modal = undefined
-}
-    
-close_span_notif.onclick = function() {
-    active_modal.style.display = "none";
-    if (notif_next_modal) {
-    modal_notif.querySelector("#notif").innerHTML = "";
-    active_modal = notif_next_modal;
-    active_modal.style.display = "block";
-    notif_next_modal = undefined;
-    } else {
-        modal.style.display = "none";
-        active_modal = undefined
-    }
-
-}
+};
 
 submit_button_signin.addEventListener('click', func_submit_form_signin);
 
@@ -99,46 +61,6 @@ submit_button_register.addEventListener('click', func_submit_form_register);
 
 // add functions after this line
 
-function query_screenings(event) {
-
-    var mov_selection = document.getElementById('movie_selection1_select').value;
-    console.info(mov_selection);
-    // var mov_selection = new FormData(movie_selection);
-    // console.info(mov_selection.get('movie_selection1'));
-    var URL = "/screenings/"+mov_selection
-    console.info(URL)
-    var query_screenings = new XMLHttpRequest();
-    query_screenings.open("GET", URL, true);
-    query_screenings.responseType = "json";
-    query_screenings.setRequestHeader('content-type', 'application/json');
-    query_screenings.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            console.info(query_screenings.response);
-            screenings_data = query_screenings.response;
-            var show_list_select_element = document.getElementById("show_selection1_select");
-
-            for (option in show_list_select_element.children){
-                show_list_select_element.remove(option);
-            };
-        
-            for (var key in screenings_data) {
-                if (screenings_data.hasOwnProperty(key)) {
-                    var element = document.createElement('option');
-                    element.value = key;
-                    element.text = screenings_data[key].screening_date+": "+screenings_data[key].screening_time;
-                    show_list_select_element.appendChild(element);
-                }
-            }
-
-            // populate_screenings(screenings_data);
-        }
-    };
-    query_screenings.send(JSON.stringify({mov_Selection : mov_selection}));
-    // query_screenings.send("this is absurd");
-};
-
-
-//this is to be used after the screenings query is run and output displayed to the users and a selection made.
 function check_login(event) {
     if (!document.cookie){
         launch_signin_modal()
@@ -160,10 +82,37 @@ function launch_signin_modal(event){
     console.info("this line ran... YAAY!");
 };
 
+span.onclick = function() {
+    active_modal.style.display = "none";
+    modal.style.display = "none";
+    active_modal = undefined
+}
+
+close_span_signin.onclick = function() {
+    active_modal.style.display = "none";
+    modal.style.display = "none";
+    active_modal = undefined
+}
+
+close_span_register.onclick = function() {
+    active_modal.style.display = "none";
+    modal.style.display = "none";
+    active_modal = undefined
+}
+
+close_span_notif.onclick = function() {
+    modal_notif.querySelector("#notif").innerHTML = "";
+    active_modal.style.display = "none";
+    // modal.style.display = "none";
+    active_modal = notif_next_modal;
+    active_modal.style.display = "block";
+
+}
+
 //getting the details of movies
 function get_movie_details_request(){
     var request_movies = new XMLHttpRequest();
-    request_movies.open("GET", "/movies", true);
+    request_movies.open("GET", "/display_movie", true);
     request_movies.responseType = "json"
     request_movies.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -185,8 +134,11 @@ function func_submit_movie_selection(event){
     console.info(movie_selection);
     var form_contact_movie_selection = document.forms['form_select_no_of_seats'].elements.namedItem('form_contact_movie_selection');
     form_contact_movie_selection.value = movie_selection;
+    // event.preventDefault();
+    //console.info(movie_data[movie_selection].avail_seats);
     var get_no_of_avail_seats = new XMLHttpRequest();
     get_no_of_avail_seats.open("POST", "/no_of_seats_avail", true);
+    // get_no_of_avail_seats.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     get_no_of_avail_seats.responseType = "json";
     get_no_of_avail_seats.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -194,6 +146,8 @@ function func_submit_movie_selection(event){
             active_modal = modal_1;
             modal.style.display = "block";
             modal_1.style.display = "block";
+            // when validated no of seats is passed to the next function, the modal is called.
+            // this will be needed to be altered when checking for available seats and raising alert for letting a user know if seats are available.
             }
         }
     text_to_send = { "movie_name" : movie_selection} ;
@@ -247,6 +201,7 @@ function validate_no_of_available_seats(no_of_seats_in_selected_movie){
     }
     };
 
+
 function populate_movies(movie_data){
     console.info(movie_data);
     console.info("this happened");
@@ -279,8 +234,7 @@ function func_submit_form_register(event){
     register_new_cx.responseType = "json";
     register_new_cx.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-        registration_status = register_new_cx.response;
-        notification(registration_status.status)
+        let registration_status = register_new_cx.response;
             }
         }
     register_new_cx.send(JSON.stringify(data_to_send));
@@ -304,9 +258,10 @@ function func_submit_form_signin(event){
                 let login_status = signin_cx.response;
                 notif_next_modal = modal_1
                 notification(login_status['status'],notif_next_modal);
+
                 }
             }
-        signin_cx.send(JSON.stringify(data_to_send));
+        signin_cx.send(JSON.stringify(data_to_send));    
         };
 
 function notification(message, notif_next_modal) {
@@ -318,4 +273,5 @@ function notification(message, notif_next_modal) {
     active_modal.style.display = "block"
     }
      
+    
 }
