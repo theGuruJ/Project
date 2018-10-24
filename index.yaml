@@ -15,3 +15,13 @@ indexes:
   properties:
   - name: date
     direction: desc
+
+- kind: MovieScreeningDates
+  properties:
+  - name: movie_identifier
+  - name: screening_date
+
+- kind: MovieScreenings
+  properties:
+  - name: movie_identifier
+  - name: screening_date

@@ -24,7 +24,7 @@
 
 import json
 from google.appengine.ext import ndb
-import datetime
+from datetime import datetime
 
 
 class Session(ndb.Model):
@@ -36,7 +36,7 @@ class Session(ndb.Model):
     def set_session(user_data):
         existing_sessions = Session.query(Session.email == user_data.get('email_address')).get()
         if existing_sessions is not None:
-            existing_sessions.date = datetime.datetime.now()
+            existing_sessions.date = datetime.now()
             existing_sessions.put()
             return existing_sessions.key
         else:
@@ -49,25 +49,34 @@ class MovieDetails(ndb.Model):
     available_seats = ndb.IntegerProperty()
     booked_seats = ndb.IntegerProperty()
     movie_status = ndb.StringProperty()
+    screening_end_date = ndb.StringProperty()
 
     @staticmethod
     def get_movie_name(movie_name):
-        return (ndb.Key("MovieDetails", movie_name).get()).movie_name
+        return MovieDetails.query(MovieDetails.movie_name == movie_name).get().movie_name
 
-    def get_movie_details(self):
-        #to be implemented
-        pass
+    @staticmethod
+    def get_movie_listings():
+        movie = MovieDetails.query().fetch()
+        details = {}
+        for each in movie:
+            details.update({
+                each.key.id(): {"name": each.movie_name,
+                             "avail_seats": each.available_seats}
+            })
+        return json.dumps(details)
 
     @staticmethod
     def add_movie(details):
         movie = MovieDetails(
-            movie_name = details.get('movie_name'),
-            capacity = details.get('capacity'),
-            available_seats = details.get('available_seats'),
-            booked_seats = details.get('booked_seats'),
-            movie_status = details.get('movie_status'),
+            movie_name=details.get('movie_name'),
+            capacity=int(details.get('capacity')),
+            available_seats=int(details.get('available_seats')),
+            booked_seats=int(details.get('booked_seats')),
+            movie_status=details.get('movie_status'),
+            screening_end_date=details.get('screening_end_date')
             )
-        return movie.put()
+        return movie.put().urlsafe()
 
 
 class Customers(ndb.Model):
@@ -75,135 +84,145 @@ class Customers(ndb.Model):
     password = ndb.StringProperty()
     customer_name = ndb.StringProperty()
     email_address = ndb.StringProperty()
-    phone_number = ndb.IntegerProperty()
+    phone_number = ndb.StringProperty()
 
     @staticmethod
     def create_customer(email_address, password, customer_name, phone_number):
-        if not ndb.Key("Customers", email_address).get():
-            customer = Customers(
-            id=email_address, username=email_address, password=password, customer_name=customer_name,
-            email_address=email_address, phone_number=int(phone_number)
-            )
+        customer_query = Customers.query(Customers.email_address == email_address).get()
+        if customer_query is not None:
+            c_key = customer_query.key
+            output = {"status": "customer already exists",
+                      "key": c_key.urlsafe()}
+            return json.dumps(output)
         else:
-            return False
+            customer = Customers(
+            username=email_address,
+            password=password,
+            customer_name=customer_name,
+            email_address=email_address,
+            phone_number=phone_number
+            )
+            c_key = customer.put()
+            output = {"status": "customer created",
+                      "key": c_key.urlsafe()}
 
-        return customer.put()
+            return json.dumps(output)
+
+    @staticmethod
+    def get_customer(customer_key):
+        c_key = ndb.Key(urlsafe=customer_key)
+        customer = c_key.get()
+        output = {}
+        if customer is not None:
+            output['status'] = "Customer Exists"
+            output['key'] = customer.key.urlsafe()
+            return json.dumps(customer)
+        else:
+            return "not a customer"
 
     @staticmethod
     def is_customer(email_address, password):
-        customer = ndb.Key("Customers", email_address).get()
+        customer = Customers.query(Customers.username == email_address).get()
         print password
         print customer
-        if password == customer.password:
-            return customer
+
+        if customer is not None:
+            if password == customer.password:
+                return {
+                        "status": "Valid Customer",
+                        "customer": customer.to_dict()
+                        }
+            else:
+                return {
+                        "status": "Invalid Password"
+                        }
         else:
-            return False
+            return {
+                        "status": "Invalid Username"
+                        }
 
 
-class MovieScreenings(ndb.Model):
+class MovieScreeningDates(ndb.Model):
     movie_identifier = ndb.KeyProperty(kind=MovieDetails)
-    screening_date = ndb.DateProperty()
-    screening_time = ndb.TimeProperty()
+    screening_date = ndb.StringProperty()
+
+    @staticmethod
+    def create_movie_screening(movie_identifier, screening_date):
+        print movie_identifier
+        print screening_date
+        m_key = ndb.Key(urlsafe=movie_identifier)
+        movie_screening = MovieScreeningDates(
+            movie_identifier=m_key,
+            screening_date=screening_date,
+        )
+        return movie_screening.put().urlsafe()
+
+    @staticmethod
+    def get_screening_dates(mov_id):
+        movie_key = ndb.Key(MovieDetails, int(mov_id))
+        query_result = MovieScreeningDates.query(MovieScreeningDates.movie_identifier == movie_key).fetch(projection=[MovieScreeningDates.screening_date])
+        if query_result is not None:
+            output = {}
+            for each in query_result:
+                output.update({each.key.urlsafe(): each.to_dict()})
+            # for each in output:
+            #     output[each]['movie_identifier'] = output[each]['movie_identifier'].urlsafe()
+            print output
+            return json.dumps(output)
+        else:
+            return "invalid movie selection"
+
+class MovieScreeningTimes(ndb.Model):
+    movie_identifier = ndb.KeyProperty(kind=MovieDetails)
+    screening_date = ndb.StringProperty()
+    screening_time = ndb.StringProperty()
+
+    @staticmethod
+    def add_movie_screening_times(movie_identifier, screening_date, screening_time):
+        print movie_identifier
+        print screening_date
+        print screening_time
+        m_key = ndb.Key(urlsafe=movie_identifier)
+        movie_screening = MovieScreeningTimes(
+            movie_identifier=m_key,
+            screening_date=screening_date,
+            screening_time=screening_time
+        )
+        return movie_screening.put().urlsafe()
+
+
+
+    @staticmethod
+    def get_screening_times(mov_id):
+        movie_key = ndb.Key(MovieDetails, int(mov_id))
+        query_result = MovieScreeningTimes.query(MovieScreeningTimes.movie_identifier == movie_key).fetch()
+        if query_result is not None:
+            output = {}
+            for each in query_result:
+                output.update({each.key.urlsafe(): each.to_dict()})
+            for each in output:
+                output[each]['movie_identifier'] = output[each]['movie_identifier'].urlsafe()
+            print output
+            return json.dumps(output)
+        else:
+            return "invalid movie selection"
 
 
 class Tickets(ndb.Model):
     movie_selection = ndb.KeyProperty(kind=MovieDetails)
-    screening = ndb.KeyProperty(kind=MovieScreenings)
+    screening = ndb.KeyProperty(kind=MovieScreeningTimes)
     customer_id = ndb.KeyProperty(kind=Customers)
     no_of_seats_booked = ndb.IntegerProperty()
 
-
-class MovieTickets(object):
-    '''
-    provides for a way to store and retrieve details of tickets issued
-    uses a dictionary structure.
-    {   ticket ID: [Movie Serial Number(int),
-                    Customer name (Str),
-                    The number of Seats(int, max of 6, no more per booking.
-                    The phone number (10 digit numeric number}
-
-    '''
-
-    movies = {
-        "Avengers Infinity Wars": {"avail_seats": 4, "booked_seats": 0, "tickets_list": []},
-        "Deadpool 2": {"avail_seats": 75, "booked_seats": 0, "tickets_list": []},
-        "Jurassic World":{"avail_seats": 100, "booked_seats": 0, "tickets_list": []},
-        "Kaala":{"avail_seats": 100, "booked_seats": 0, "tickets_list": []},
-        "Veere Di Wedding":{"avail_seats": 10, "booked_seats": 0, "tickets_list": []}
-    }
-
-    # movies = {"1": {"name": 'Avengers: Infinity Wars', "avail_seats": 10, "booked_seats": 0,},
-    #           "2": {"name": 'Deadpool 2', "avail_seats": 75, "booked_seats": 0,},
-    #           "3": {"name": 'Jurassic World', "avail_seats": 0, "booked_seats": 0,},
-    #           "4": {"name": 'Kaala', "avail_seats": 100, "booked_seats": 0,},
-    #           "5": {"name": 'Veere Di Wedding', "avail_seats": 100, "booked_seats": 0,},
-    #           }
-
-    tickets = {}
-
-    ticket_id = 1
-
-    # @staticmethod
-    # def no_of_movies():
-    #     """
-    #     :return number of movies available in the booking list, with no of available seats:
-    #     """
-    #     list_of_movies = {}
-    #     for i in MovieTickets.movies:
-    #         list_of_movies.update({i:MovieTickets.movies[i]["avail_seats"]})
-    #     return json.dumps(list_of_movies)
-
-
     @staticmethod
-    def get_movie_details():
-        """
-        :return returns a json of the details of the movies:
-        """
-        return json.dumps(MovieTickets.movies)
-
-    @staticmethod
-    def no_of_seats_available(movie_selection):
-        """
-        input: the movie selection
-
-        :param movie_selection:
-        :return returns the number of seats still available to book for a specific movie:
-        """
-        return MovieTickets.movies[movie_selection]["avail_seats"]
+    def create_ticker(movie_key, screening_key, customer_key, no_of_seats):
+        ticket = Tickets(
+            movie_selection=movie_key,
+            screening=screening_key,
+            customer_id=customer_key,
+            no_of_seats_booked=no_of_seats
+        )
+        ticket_key = ticket.put()
+        return ticket_key
 
 
-    @staticmethod
-    def get_movie_name(movie_selection):
-        """
-        input: takes the selection of the user for booking seats for a movie.
-        :param movie_selection:
-        :return the name of the movie:
-        """
-        return MovieTickets.movies[movie_selection]["name"]
-
-
-    @staticmethod
-    def book_a_ticket(movie_selection,name_of_booker,phone_number,number_of_seats_booked):
-        """
-        enables to book a ticket
-
-        :param movie_selection:
-        :param name_of_booker:
-        :param phone_number:
-        :param number_of_seats_booked:
-        :return ticket details in a json format, to be used to print to screen to confirm to user:
-        """
-        MovieTickets.tickets.update({MovieTickets.ticket_id : {'movieSelection' : movie_selection, "name_of_user" : name_of_booker, "phone_number" : phone_number, "no_of_seats" : number_of_seats_booked}})
-        #ticket_details = json.dumps([MovieTickets.ticket_id,MovieTickets.movies[movie_selection][0],name_of_booker,phone_number,number_of_seats_booked])
-        ticket_details = MovieTickets.tickets.get(MovieTickets.ticket_id)
-        number_of_seats_booked = int(number_of_seats_booked)
-        MovieTickets.movies[movie_selection]["avail_seats"] -= number_of_seats_booked
-        MovieTickets.movies[movie_selection]["booked_seats"] += number_of_seats_booked
-        MovieTickets.movies[movie_selection]["tickets_list"].append(MovieTickets.ticket_id)
-        MovieTickets.ticket_id += 1
-        print("Ticket Booked")
-        return ticket_details
-
-
-if __name__ == '__main__':
-    main()

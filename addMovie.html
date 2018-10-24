@@ -4,14 +4,13 @@
     <meta charset="utf-8" />
     <title>Page Title</title>
     <link rel="stylesheet" type="text/css" media="screen" href="/stylesheets/main.css" />
-    <script src="main.js"></script>
 </head>
 <body>
 
     <h3>Add Movie to DB</h3>
     <div>
 
-        <form action="/add_movie" method="post">
+        <form action="/add_movie" method="post" id="add_movie_details_entry">
             <input type="text" name="movie_name" id="movie_name" placeholder="Movie Name" required>
             
             <input type="number" name="capacity" id="movie_capacity" placeholder="Total Number of Seats" required>
@@ -19,17 +18,26 @@
             <input type="number" name="available_seats" id="available_seats" placeholder="Total Seats Available to Book" required>
             
             <input type="number" name="booked_seats" id="booked_seats" placeholder="No of Seats Booked" required>
+            
+            <input type="date" name="screening_end_date" id="screening_end_date" placeholder="Date of Last Screening" required>
 
             <select name="movie_status" id="movie_status" required>
                 <option value="" disabled selected>Select One</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
+
             <input type="submit" value="submit">
         </form>
 
     </div>
 
-    
+    <div class="results__display">
+
+
+
+    </div>
+
+    <script src="js/addmovie.js"></script>
 </body>
 </html>

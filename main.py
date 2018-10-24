@@ -7,48 +7,65 @@ import datetime
 import json
 
 
-from view import View as View
-from my_db import MovieTickets as MovieTickets # old db model based on dict
-from my_db import Customers as Customers
 from my_db import Session as Session
+from my_db import Customers as Customers
 from my_db import Tickets as Tickets
 from my_db import MovieDetails as MovieDetails
-from google.appengine.api import users
+from my_db import MovieScreeningDates as MovieScreeningDates
+from my_db import MovieScreeningTimes as MovieScreeningTimes
+
+
 from google.appengine.ext.webapp import template
 from google.appengine.ext import ndb
 
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-
         path = os.path.join(os.path.dirname(__file__), 'index.html')
         self.response.write(template.render(path, {}))
 
 
-class GetMovieDetails(webapp2.RequestHandler):
+class AddMovie((webapp2.RequestHandler)):
     def get(self):
-        movie = MovieDetails.query().fetch()
-        print movie
-        details = {}
-        for n in movie:
-            details.update({
-                n.key.id(): {"name": n.movie_name,
-                             "avail_seats": n.available_seats}
-            })
-            print n.key.id()
-            print n.movie_name
-            print n.available_seats
-        print details
+        path = os.path.join(os.path.dirname(__file__), 'addmovie.html')
+        self.response.write(template.render(path, {}))
+
+    def post(self):
+        input_date = self.request.POST
+        print input_date
+        key_from_put = MovieDetails.add_movie(input_date)
+        print key_from_put
+        what_happened = {'Key_ID': key_from_put}
+        self.response.write(json.dumps(what_happened))
+
+
+class Movies(webapp2.RequestHandler):
+    def get(self):
+        print self.request
+        output_data = MovieDetails.get_movie_listings()
 
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.write(json.dumps(details))
+        self.response.write(output_data)
+
+    def post(self):
+        input_date = json.loads(self.request.body)
+        print input_date
+        key_from_put = MovieDetails.add_movie(input_date)
+        print key_from_put
+        what_happened = {'Key_ID': key_from_put}
+        self.response.write(json.dumps(what_happened))
+
+    def put(self):
+        pass
+
 
 
 class NoOfSeatsAvail(webapp2.RequestHandler):
     def post(self):
         input_data = json.loads(self.request.body)
-        selected_movie_id = int(input_data.get('movie_name'))
-        print MovieDetails.get_movie_name(selected_movie_id)
+        print input_data
+        # selected_movie_id = int(input_data.get('movie_name'))
+        # print MovieDetails.get_movie_name(selected_movie_id)
 
         movie_key = ndb.Key("MovieDetails", selected_movie_id)
         no_of_seats_avail = movie_key.get()
@@ -57,22 +74,21 @@ class NoOfSeatsAvail(webapp2.RequestHandler):
         self.response.write(json.dumps(output_data))
 
 
-class BookTicket(webapp2.RequestHandler):
+class Tickets(webapp2.RequestHandler):
+    def get(self):
+        '''
+        return tickets based on criteria tbd
+        :return:
+        '''
+
+
     def post(self):
         input_data = json.loads(self.request.body)
         print input_data
 
-        email_address = str(input_data.get('email'))
-        if not ndb.Key("Customers", email_address).get():
+        customer_key = input_data.get('customer_key')
 
-            customer = Customers()
-            customer.customer_name = str(input_data.get('name'))
-            customer.phone_number = int(input_data.get('phoneNumber'))
-            customer.username = str(input_data.get('email'))
-            customer.password = 'temp'
-            customer_key = customer.put()
-        else:
-            customer_key = ndb.Key("Customers", email_address)
+        email_address = str(input_data.get('email'))
 
         selected_movie_id = int(input_data.get('movie_name'))
         movie_key = ndb.Key("MovieDetails", selected_movie_id)
@@ -92,41 +108,8 @@ class BookTicket(webapp2.RequestHandler):
         self.response.write(json.dumps(ticket_output))
 
 
-class AddMovie(webapp2.RequestHandler):
-    def get(self):
-        movie = MovieDetails()
-        # list_of_movies = movie.get()
-        details = {
-            'Movies': "list_of_movies"
-        }
-        path = os.path.join(os.path.dirname(__file__), 'addMovie.html')
-        print path
-        self.response.write(template.render(path, details))
 
-    def post(self):
-        movie_name = self.request.POST['movie_name']
-        capacity = int(self.request.POST['capacity'])
-        available_seats = int(self.request.POST['available_seats'])
-        booked_seats = int(self.request.POST['booked_seats'])
-        movie_status = str(self.request.POST['movie_status'])
-
-        mov_data = {
-        'movie_name' : movie_name,
-        'capacity' : capacity,
-        'available_seats' : available_seats,
-        'booked_seats' : booked_seats,
-        'movie_status' : movie_status,
-        }
-        print mov_data
-        key_from_put = MovieDetails.add_movie(mov_data)
-        print type(key_from_put)
-        key_from_put = str(key_from_put)
-        print key_from_put
-        what_happened = {'Key_ID': key_from_put}
-        self.response.write(json.dumps(what_happened))
-
-
-class Register(webapp2.RequestHandler):
+class Customers_handler(webapp2.RequestHandler):
     def get(self):
         path = os.path.join(os.path.dirname(__file__), 'register.html')
         self.response.write(template.render(path, {}))
@@ -136,11 +119,11 @@ class Register(webapp2.RequestHandler):
         email_address = input_data['email_address']
         # print Customers.query(Customers.identifier == email_address).fetch()
 
-        print ndb.Key("Customers", email_address).get()
         password = input_data['password']
         customer_name = input_data['customer_name']
-        phone_number = int(input_data['phone_number'])
+        phone_number = str(input_data['phone_number'])
         customer_key = Customers.create_customer(email_address, password, customer_name, phone_number)
+        print customer_key
         session_id = str((Session.set_session({'customer_name': customer_name, 'email_address': email_address})).id())
         print session_id
         if customer_key:
@@ -162,10 +145,10 @@ class Login(webapp2.RequestHandler):
         customer = Customers.is_customer(**input_data)
         print "Main.py - line 177"
         print customer
-        if customer:
+        if customer.get('status') == "Valid Customer":
             customer_info = {
-                'customer_name': customer.customer_name,
-                'email_address':  customer.email_address
+                'customer_name': customer.get('customer').get('customer_name'),
+                'email_address': customer.get('customer').get('email_address')
             }
             session_key = Session.set_session(customer_info)
             print "Main.py - line 181"
@@ -176,42 +159,70 @@ class Login(webapp2.RequestHandler):
             self.response.set_cookie('session_id', session_id, max_age=1800)
             self.response.write(json.dumps({'status': 'login successful'}))
         else:
-            self.response.write(json.dumps({'status': 'login failed'}))
+            self.response.write(json.dumps({'status': customer.get('status')}))
 
-
-class EditMovie(webapp2.RequestHandler):
+class Register(webapp2.RequestHandler):
     def get(self):
-        path = os.path.join(os.path.dirname(__file__), 'edit_movie.html')
+        path = os.path.join(os.path.dirname(__file__), 'register.html')
         self.response.write(template.render(path, {}))
 
     def post(self):
-        movie = MovieDetails.query().fetch()
-        print movie
-        details = {}
+        input_data = json.loads(self.request.body)
+        email_address = input_data.get('email_address')
+        customer_name = input_data.get('customer_name')
+        print input_data
+        customer = json.loads(Customers.create_customer(**input_data))
+        if customer.get("status") == "customer created":
+            customer_info = {
+                'customer_name': customer_name,
+                'email_address': email_address
+            }
+            session_key = Session.set_session(customer_info)
+            print session_key
+            session_id = str(session_key.id())
+            print "Main.py - line 184"
+            print session_id
+            self.response.set_cookie('session_id', session_id, max_age=1800)
+            self.response.write(json.dumps({'status': 'registration successful, logged in'}))
+        else:
+            self.response.write(json.dumps({'status': 'Email already registered, please login'}))
 
-        for n in movie:
-            details.update({
-                n.key.id(): {"name": n.movie_name,
-                             "avail_seats": n.available_seats}
-            })
-        #     print n.key.id()
-        #     print n.movie_name
-        #     print n.available_seats
-        # print details
 
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.write(json.dumps(details))
+
+class Screenings(webapp2.RequestHandler):
+    def get(self, mov_id=None):
+        print mov_id
+        self.request.headers.get('Content_Type')
+
+        if self.request.headers.get('Content_Type') == "application/json":
+            screenings = MovieScreeningTimes.get_screening_times(mov_id)
+            self.response.write(screenings)
+        else:
+            path = os.path.join(os.path.dirname(__file__), 'screenings.html')
+            self.response.write(template.render(path, {}))
+
+    def post(self):
+        input_data = {key: value for (key, value) in self.request.POST.items()}
+        print input_data
+        a, b, c = input_data
+        print input_data[a]
+        print input_data[b]
+        print input_data[c]
+        screening = MovieScreeningTimes.add_movie_screening_times(**input_data)
+        self.response.write(screening)
 
 
 application = webapp2.WSGIApplication([
-    ('/',MainPage),
-    ('/display_movie', GetMovieDetails),
-    ('/no_of_seats_avail', NoOfSeatsAvail),
-    ('/book_ticket', BookTicket),
-    ('/register', Register),
-    ('/login', Login),
-    ('/add_movie', AddMovie),
-    ('/edit_movie', EditMovie),
+    webapp2.Route('/',MainPage),
+    webapp2.Route('/movies', Movies),
+    webapp2.Route('/query/no_of_seats_avail', NoOfSeatsAvail),
+    webapp2.Route('/tickets', Tickets),
+    webapp2.Route('/customers', Customers_handler),
+    webapp2.Route('/register', Register),
+    webapp2.Route('/login', Login),
+    webapp2.Route('/add_movie', AddMovie),
+    webapp2.Route('/screenings/<:\S+>', Screenings),
+    webapp2.Route('/screenings', Screenings),
 
 ], debug=True, )
 
